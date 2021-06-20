@@ -9,4 +9,18 @@
     <string name="accept_button_text">Aceptar</string>
     <string name="change_pattern_checkbox">Cambiar patrón</string>
     <string name="change_pattern_text">Cambiar patrón</string>
+
+    <string name="volver">Volver</string>
+    <string name="login">Login</string>
+    <string name="sin_aliento">Sin Aliento</string>
+    <string-array name="spinnerCommission">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
 </resources>

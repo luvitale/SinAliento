@@ -77,7 +77,7 @@ public class UnlockActivity extends AppCompatActivity {
                         startChangePatternActivity();
                     }
                     else {
-                        startSessionActivity();
+                        startMainActivity();
                     }
                 }
 
@@ -93,8 +93,8 @@ public class UnlockActivity extends AppCompatActivity {
         });
     }
 
-    private void startSessionActivity() {
-        Intent intent = new Intent(UnlockActivity.this, SessionActivity.class);
+    private void startMainActivity() {
+        Intent intent = new Intent(UnlockActivity.this, MainActivity.class);
         startActivity(intent);
     }
 
