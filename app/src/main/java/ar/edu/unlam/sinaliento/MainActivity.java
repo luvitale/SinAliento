@@ -25,6 +25,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static ar.edu.unlam.sinaliento.R.*;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,10 +37,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(layout.activity_main);
 
-        email = findViewById(R.id.txtEmail);
-        password = findViewById(R.id.txtPassword);
+        email = findViewById(id.txtEmail);
+        password = findViewById(id.txtPassword);
         message = "";
     }
 
@@ -132,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         else {
-            Toast.makeText(getBaseContext(), "Toque de nuevo para cerrar la aplicación", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(), getString(string.close_application_alert), Toast.LENGTH_SHORT).show();
         }
 
         mBackPressed = System.currentTimeMillis();
