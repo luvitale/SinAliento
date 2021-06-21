@@ -20,7 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:hint="Email" />
+        android:hint="@string/email_hint" />
 
     <EditText
         android:id="@+id/txtPassword"
@@ -36,7 +36,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtEmail"
-        android:hint="Password" />
+        android:hint="@string/password_hint" />
 
     <Button
         android:id="@+id/btnLogin"
@@ -65,7 +65,7 @@
         android:layout_marginRight="32dp"
         android:background="@drawable/button_rounded_border"
         android:onClick="Registrarse"
-        android:text="Registrate"
+        android:text="@string/register_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -74,7 +74,7 @@
         app:layout_constraintVertical_bias="0.238" />
 
     <ImageView
-        android:id="@+id/imageView6"
+        android:id="@+id/appImageView"
         android:layout_width="180dp"
         android:layout_height="180dp"
         app:layout_constraintBottom_toTopOf="@+id/txtEmail"
@@ -85,10 +85,10 @@
         tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/joinTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="¿Todavía no sos parte de Sin Aliento?"
+        android:text="@string/join_text"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/btnRegister"
         app:layout_constraintEnd_toEndOf="parent"
