@@ -1,4 +1,4 @@
-package ar.edu.unlam.tpandroidsoa;
+package ar.edu.unlam.sinaliento;
 
 import android.content.Context;
 

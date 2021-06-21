@@ -1,1 +1,3 @@
-# TP Android SOA
+# Sin aliento
+
+Aplicación de Android para Sistemas Operativos Avanzados.
