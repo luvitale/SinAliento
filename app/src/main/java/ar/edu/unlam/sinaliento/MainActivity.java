@@ -1,6 +1,7 @@
 package ar.edu.unlam.sinaliento;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -114,6 +115,27 @@ public class MainActivity extends AppCompatActivity {
     public void Registrarse(View view){
         Intent registrarse = new Intent(this, RegisterActivity.class);
         startActivity(registrarse);
+    }
+
+
+    private static final int TIME_INTERVAL = 2000;
+    private long mBackPressed;
+
+    @Override
+    public void onBackPressed()
+    {
+        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis())
+        {
+            super.onBackPressed();
+            ActivityCompat.finishAffinity(this);
+            return;
+        }
+
+        else {
+            Toast.makeText(getBaseContext(), "Toque de nuevo para cerrar la aplicación", Toast.LENGTH_SHORT).show();
+        }
+
+        mBackPressed = System.currentTimeMillis();
     }
 
 }
