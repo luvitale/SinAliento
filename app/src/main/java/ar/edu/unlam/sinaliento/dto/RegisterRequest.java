@@ -2,7 +2,7 @@ package ar.edu.unlam.sinaliento.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Post {
+public class RegisterRequest {
 
     private String env;
 

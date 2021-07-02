@@ -1,4 +1,4 @@
-package ar.edu.unlam.sinaliento;
+package ar.edu.unlam.sinaliento.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 

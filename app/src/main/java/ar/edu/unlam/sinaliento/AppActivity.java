@@ -22,6 +22,8 @@ import ar.edu.unlam.sinaliento.dto.EventResponse;
 import ar.edu.unlam.sinaliento.dto.RefreshResponse;
 
 
+import ar.edu.unlam.sinaliento.utils.MySharedPreferences;
+import ar.edu.unlam.sinaliento.utils.SoaApi;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -70,25 +72,25 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    public void ToLogin(View view) {
+    public void logOut(View view) {
         StopSensors();
         sharedPreferences.setToken("");
         sharedPreferences.setTokenRefresh("");
         Intent login = new Intent(this, MainActivity.class);
 
-        Toast.makeText(this, "Sesión finalizada", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.finished_session_text), Toast.LENGTH_SHORT).show();
 
         startActivity(login);
     }
 
-    public void InitApp(View view) {
+    public void initApp(View view) {
 
         if (valor == 0) {
             InitializeSensors();
             isOn = true;
         }
         else {
-            Toast.makeText(this, "Debe aproximar el celular", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.phone_should_be_closer_text), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -101,7 +103,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
             if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                 valor = event.values[0];
-                Toast.makeText(this, "Proximidad: " + valor, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.proximity_text) + valor, Toast.LENGTH_LONG).show();
                 registerProximityEvent(valor);
             }
 
@@ -119,7 +121,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                         }
                         else {
                             StopSensors();
-                            Toast.makeText(this, "Se ha enviado una ambulancia a su ubicacion", Toast.LENGTH_LONG ).show();
+                            Toast.makeText(this, getString(R.string.ambulance_alert_text), Toast.LENGTH_LONG ).show();
                         }
                     }
 
@@ -131,9 +133,9 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                 }
             }
             else if(isOn == true){
-                txtGyroX.setText("No puede obtenerse el valor");
-                txtGyroY.setText("No puede obtenerse el valor");
-                txtGyroZ.setText("No puede obtenerse el valor");
+                txtGyroX.setText(getString(R.string.unobtained_x_value_text));
+                txtGyroY.setText(getString(R.string.unobtained_y_value_text));
+                txtGyroZ.setText(getString(R.string.unobtained_z_value_text));
             }
 
         }
@@ -162,12 +164,12 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                 try {
                     Retrofit retrofit = new Retrofit.Builder()
                             .addConverterFactory(GsonConverterFactory.create())
-                            .baseUrl("http://so-unlam.net.ar/api/")
+                            .baseUrl(getString(R.string.apiURL))
                             .build();
 
-                    RegisterApi apiRegister = retrofit.create(RegisterApi.class);
+                    SoaApi apiSOA = retrofit.create(SoaApi.class);
 
-                    Call<RefreshResponse> call = apiRegister.refreshToken("Bearer " + sharedPreferences.getTokenRefresh());
+                    Call<RefreshResponse> call = apiSOA.refreshToken("Bearer " + sharedPreferences.getTokenRefresh());
                     call.enqueue(new Callback<RefreshResponse>() {
                         @Override
                         public void onResponse(Call<RefreshResponse> call, retrofit2.Response<RefreshResponse> response) {
@@ -177,7 +179,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                                 sharedPreferences.setTokenRefresh(response.body().getTokenRefresh());
                             }
                             else{
-                                Toast.makeText(getApplicationContext(), "No anduvo bien", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), getString(R.string.unsuccessful_refresh_token_text), Toast.LENGTH_LONG).show();
                             }
                         }
 
@@ -198,17 +200,17 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private void registerProximityEvent(double value) {
         EventRequest eventRequest = new EventRequest();
 
-        eventRequest.setEnv("PROD");
-        eventRequest.setTypeEvents("Medición de sensor de proximidad");
-        eventRequest.setDescription("Valor: " + value);
+        eventRequest.setEnv(getString(R.string.environment));
+        eventRequest.setTypeEvents(getString(R.string.proximity_type_event));
+        eventRequest.setDescription(getString(R.string.value_description) + value);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("http://so-unlam.net.ar/api/")
+                .baseUrl(getString(R.string.apiURL))
                 .build();
 
-        RegisterApi apiRegister = retrofit.create(RegisterApi.class);
-        Call<EventResponse> call = apiRegister.registrarEvento("Bearer " + sharedPreferences.getToken(), eventRequest);
+        SoaApi apiRegister = retrofit.create(SoaApi.class);
+        Call<EventResponse> call = apiRegister.registerEvent("Bearer " + sharedPreferences.getToken(), eventRequest);
         call.enqueue(new Callback<EventResponse>() {
             @Override
             public void onResponse(Call<EventResponse> call, retrofit2.Response<EventResponse> response) {
@@ -232,17 +234,21 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private void registerGyroscopeEvent(float valueX, float valueY, float valueZ) {
         EventRequest eventRequest = new EventRequest();
 
-        eventRequest.setEnv("PROD");
-        eventRequest.setTypeEvents("Medición de giroscopio");
-        eventRequest.setDescription("Valor X: " + valueX + ", Valor Y: " + valueY + ", Valor Z: " + valueZ);
+        eventRequest.setEnv(getString(R.string.environment));
+        eventRequest.setTypeEvents(getString(R.string.gyroscope_type_event));
+        eventRequest.setDescription(
+                getString(R.string.x_value_description) + valueX +
+                getString(R.string.y_value_description) + valueY +
+                getString(R.string.z_value_description) + valueZ
+        );
 
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("http://so-unlam.net.ar/api/")
+                .baseUrl(getString(R.string.apiURL))
                 .build();
 
-        RegisterApi apiRegister = retrofit.create(RegisterApi.class);
-        Call<EventResponse> call = apiRegister.registrarEvento("Bearer " + sharedPreferences.getToken(), eventRequest);
+        SoaApi apiRegister = retrofit.create(SoaApi.class);
+        Call<EventResponse> call = apiRegister.registerEvent("Bearer " + sharedPreferences.getToken(), eventRequest);
         call.enqueue(new Callback<EventResponse>() {
             @Override
             public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
