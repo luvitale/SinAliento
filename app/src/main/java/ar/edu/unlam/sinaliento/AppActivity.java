@@ -14,6 +14,20 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import ar.edu.unlam.sinaliento.dto.EventRequest;
+import ar.edu.unlam.sinaliento.dto.EventResponse;
+import ar.edu.unlam.sinaliento.dto.RefreshResponse;
+
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class AppActivity extends AppCompatActivity implements SensorEventListener {
 
     private static final int ROTATION_WAIT_TIME_MS = 500;
@@ -23,14 +37,17 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private Sensor mSensorGyroscope;
     private Sensor mSensorProximity;
 
-
-
     private TextView txtGyroX;
     private TextView txtGyroY;
     private TextView txtGyroZ;
 
     private double valor;
     private boolean isOn;
+
+    private TimerTask doAsynchronousTask;
+    private int millisecondsToRefreshToken = 30 * 60 * 1000;
+
+    MySharedPreferences sharedPreferences = MySharedPreferences.getSharedPreferences(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +58,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         mSensorGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mSensorProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
+        refreshToken();
 
         txtGyroX = findViewById(R.id.tvGyroX);
         txtGyroY = findViewById(R.id.tvGyroY);
@@ -77,6 +95,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
             if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                 valor = event.values[0];
                 Toast.makeText(this, "Proximidad: " + valor, Toast.LENGTH_LONG).show();
+                registerProximityEvent(valor);
             }
 
             if(valor == 0 && isOn == true) {
@@ -96,6 +115,8 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                             Toast.makeText(this, "Se ha enviado una ambulancia a su ubicacion", Toast.LENGTH_LONG ).show();
                         }
                     }
+
+                    registerGyroscopeEvent(event.values[0], event.values[1], event.values[2]);
 
                     txtGyroX.setText(Float.toString(event.values[0]));
                     txtGyroY.setText(Float.toString(event.values[1]));
@@ -126,4 +147,113 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE));
         mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY));
     }
+
+    public void refreshToken() {
+        Timer timer = new Timer();
+        doAsynchronousTask = new TimerTask() {
+            public void run() {
+                try {
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .baseUrl("http://so-unlam.net.ar/api/")
+                            .build();
+
+                    RegisterApi apiRegister = retrofit.create(RegisterApi.class);
+
+                    Call<RefreshResponse> call = apiRegister.refreshToken("Bearer " + sharedPreferences.getTokenRefresh());
+                    call.enqueue(new Callback<RefreshResponse>() {
+                        @Override
+                        public void onResponse(Call<RefreshResponse> call, retrofit2.Response<RefreshResponse> response) {
+
+                            if(response.isSuccessful()) {
+                                sharedPreferences.setToken(response.body().getToken());
+                                sharedPreferences.setTokenRefresh(response.body().getTokenRefresh());
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(), "No anduvo bien", Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<RefreshResponse> call, Throwable t) {
+                            Log.e(null,t.getMessage());
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        timer.schedule(doAsynchronousTask, 0, millisecondsToRefreshToken);
+
+    }
+
+    private void registerProximityEvent(double value) {
+        EventRequest eventRequest = new EventRequest();
+
+        eventRequest.setEnv("PROD");
+        eventRequest.setTypeEvents("Medición de sensor de proximidad");
+        eventRequest.setDescription("Valor: " + value);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl("http://so-unlam.net.ar/api/")
+                .build();
+
+        RegisterApi apiRegister = retrofit.create(RegisterApi.class);
+        Call<EventResponse> call = apiRegister.registrarEvento("Bearer " + sharedPreferences.getToken(), eventRequest);
+        call.enqueue(new Callback<EventResponse>() {
+            @Override
+            public void onResponse(Call<EventResponse> call, retrofit2.Response<EventResponse> response) {
+
+                if(response.isSuccessful()) {
+                    Log.e("Evento Proximidad", "Evento Registrado");
+                }
+
+                else {
+                    Log.e("Evento Proximidad", "Evento No Registrado");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EventResponse> call, Throwable t) {
+                Log.e(null,t.getMessage());
+            }
+        });
+    }
+
+    private void registerGyroscopeEvent(float valueX, float valueY, float valueZ) {
+        EventRequest eventRequest = new EventRequest();
+
+        eventRequest.setEnv("PROD");
+        eventRequest.setTypeEvents("Medición de giroscopio");
+        eventRequest.setDescription("Valor X: " + valueX + ", Valor Y: " + valueY + ", Valor Z: " + valueZ);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl("http://so-unlam.net.ar/api/")
+                .build();
+
+        RegisterApi apiRegister = retrofit.create(RegisterApi.class);
+        Call<EventResponse> call = apiRegister.registrarEvento("Bearer " + sharedPreferences.getToken(), eventRequest);
+        call.enqueue(new Callback<EventResponse>() {
+            @Override
+            public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
+
+                if(response.isSuccessful()) {
+                    Log.e("Evento Giroscopio", "Evento Registrado");
+                }
+
+                else {
+                    Log.e("Evento Giroscopio", "Evento No Registrado");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EventResponse> call, Throwable t) {
+                Log.e(null,t.getMessage());
+            }
+        });
+    }
+
 }

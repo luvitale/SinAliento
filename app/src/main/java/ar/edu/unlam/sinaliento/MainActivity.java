@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText password;
     private String message;
 
+    MySharedPreferences sharedPreferences = MySharedPreferences.getSharedPreferences(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +95,10 @@ public class MainActivity extends AppCompatActivity {
 
                                      if (response.isSuccessful()) {
                                          Intent app = new Intent(getApplicationContext(), AppActivity.class);
+
+                                         sharedPreferences.setToken(response.body().getToken());
+                                         sharedPreferences.setTokenRefresh(response.body().getTokenRefresh());
+
                                          startActivity(app);
                                      } else {
                                          Log.e(null, response.toString());

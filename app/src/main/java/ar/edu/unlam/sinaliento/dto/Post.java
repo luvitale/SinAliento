@@ -5,15 +5,20 @@ import com.google.gson.annotations.SerializedName;
 public class Post {
 
     private String env;
+
     private String name;
 
     @SerializedName("lastname")
     private String lastName;
 
     private Long dni;
+
     private String email;
+
     private String password;
+
     private Long commission;
+
     private Long group;
 
     public void setEnv(String env) {
