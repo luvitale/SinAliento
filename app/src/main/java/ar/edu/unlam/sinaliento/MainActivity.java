@@ -89,19 +89,23 @@ public class MainActivity extends AppCompatActivity {
 
                 RegisterApi apiRegister = retrofit.create(RegisterApi.class);
                 Call<Session> call = apiRegister.login(loginRequest);
+                Toast.makeText(this, "Iniciando sesión...", Toast.LENGTH_LONG).show();
                 call.enqueue(new Callback<Session>() {
                                  @Override
                                  public void onResponse(Call<Session> call, Response<Session> response) {
-
                                      if (response.isSuccessful()) {
                                          Intent app = new Intent(getApplicationContext(), AppActivity.class);
 
                                          sharedPreferences.setToken(response.body().getToken());
                                          sharedPreferences.setTokenRefresh(response.body().getTokenRefresh());
 
+                                         Toast.makeText(MainActivity.this, "Sesión iniciada", Toast.LENGTH_SHORT).show();
+
                                          startActivity(app);
                                      } else {
                                          Log.e(null, response.toString());
+
+                                         Toast.makeText(MainActivity.this, "No se pudo iniciar sesión", Toast.LENGTH_SHORT).show();
                                      }
                                  }
 

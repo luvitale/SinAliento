@@ -45,7 +45,9 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private boolean isOn;
 
     private TimerTask doAsynchronousTask;
-    private int millisecondsToRefreshToken = 30 * 60 * 1000;
+
+    private final int minutesToRefreshToken = 30;
+    private final int millisecondsToRefreshToken = minutesToRefreshToken * 60 * 1000;
 
     MySharedPreferences sharedPreferences = MySharedPreferences.getSharedPreferences(this);
 
@@ -70,7 +72,12 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
     public void ToLogin(View view) {
         StopSensors();
+        sharedPreferences.setToken("");
+        sharedPreferences.setTokenRefresh("");
         Intent login = new Intent(this, MainActivity.class);
+
+        Toast.makeText(this, "Sesión finalizada", Toast.LENGTH_SHORT).show();
+
         startActivity(login);
     }
 
