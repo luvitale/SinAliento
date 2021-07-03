@@ -43,17 +43,17 @@
     <string name="apiURL">http://so-unlam.net.ar/api/</string>
     <string name="environment">PROD</string>
     <string name="proximity_type_event">Medición de sensor de proximidad</string>
-    <string name="value_description">Valor: </string>
+    <string name="value_description">Valor:\u0020</string>
     <string name="gyroscope_type_event">Medición de giroscopio</string>
-    <string name="x_value_description">Valor X: </string>
-    <string name="y_value_description">, Valor Y: </string>
-    <string name="z_value_description">, Valor Z: </string>
+    <string name="x_value_description">Valor X:\u0020</string>
+    <string name="y_value_description">, Valor Y:\u0020</string>
+    <string name="z_value_description">, Valor Z:\u0020</string>
     <string name="unsuccessful_refresh_token_text">No se pudo actualizar el token</string>
     <string name="unobtained_x_value_text">No se puede obtener el valor en X</string>
     <string name="unobtained_y_value_text">No se puede obtener el valor en Y</string>
     <string name="unobtained_z_value_text">No se puede obtener el valor en Z</string>
-    <string name="ambulance_alert_text">Se ha enviado una ambulancia a su ubicacion</string>
-    <string name="proximity_text">Proximidad:</string>
+    <string name="ambulance_alert_text">Se ha enviado una ambulancia a su ubicación</string>
+    <string name="proximity_text">Proximidad:\u0020</string>
     <string name="finished_session_text">Sesión finalizada</string>
     <string name="phone_should_be_closer_text">Debe aproximar el celular</string>
     <string name="changed_pattern_text">Patrón guardado</string>
@@ -81,6 +81,7 @@
     <string name="empty_group_number_register_error">Debe ingresar un número de grupo</string>
     <string name="empty_commission_number_register_error">Debe ingresar un número de comisión</string>
     <string name="unvalid_commission_number_register_error">Debe ingresar un número de comisión válido (2900 o 3900)</string>
-    <string name="login_description">Sesión iniciada: </string>
+    <string name="login_description">Sesión iniciada:\u0020</string>
     <string name="login_type_event">Inicio de sesión</string>
+    <string name="sensor_event_register_switch_text">Registro de eventos de sensor\u0020\u0020</string>
 </resources>

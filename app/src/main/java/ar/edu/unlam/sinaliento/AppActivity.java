@@ -9,6 +9,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,8 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private Sensor mSensorGyroscope;
     private Sensor mSensorProximity;
 
+    private Switch mSensorEventRegisterSwitch;
+
     private TextView txtGyroX;
     private TextView txtGyroY;
     private TextView txtGyroZ;
@@ -62,6 +65,9 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         txtGyroX = findViewById(R.id.tvGyroX);
         txtGyroY = findViewById(R.id.tvGyroY);
         txtGyroZ = findViewById(R.id.tvGyroZ);
+
+        mSensorEventRegisterSwitch = findViewById(R.id.sensorEventRegisterSwitch);
+
         isOn = false;
         valor = 10;
 
@@ -99,8 +105,11 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
             if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                 valor = event.values[0];
-                Toast.makeText(this, getString(R.string.proximity_text) + valor, Toast.LENGTH_LONG).show();
-                registerProximityEvent(valor);
+                Toast.makeText(this, getString(R.string.proximity_text) + valor, Toast.LENGTH_SHORT).show();
+
+                if (mSensorEventRegisterSwitch.isChecked()) {
+                    registerProximityEvent(valor);
+                }
             }
 
             if(valor == 0 && isOn == true) {
@@ -121,7 +130,9 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                         }
                     }
 
-                    registerGyroscopeEvent(event.values[0], event.values[1], event.values[2]);
+                    if (mSensorEventRegisterSwitch.isChecked()) {
+                        registerGyroscopeEvent(event.values[0], event.values[1], event.values[2]);
+                    }
 
                     txtGyroX.setText(Float.toString(event.values[0]));
                     txtGyroY.setText(Float.toString(event.values[1]));

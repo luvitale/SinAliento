@@ -10,12 +10,11 @@
         android:id="@+id/tvGyroX"
         android:layout_width="250dp"
         android:layout_height="20dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="40dp"
         android:hint="@string/x_respiration_hint"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/tvGyroY"
@@ -24,7 +23,6 @@
         android:layout_marginTop="40dp"
         android:hint="@string/y_respiration_hint"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvGyroX" />
 
@@ -35,9 +33,18 @@
         android:layout_marginTop="40dp"
         android:hint="@string/z_respiration_hint"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvGyroY" />
+
+    <Switch
+        android:id="@+id/sensorEventRegisterSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sensor_event_register_switch_text"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvGyroZ"  />
 
     <Button
         android:id="@+id/button"
@@ -49,18 +56,22 @@
         android:text="@string/start_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvGyroZ" />
+        app:layout_constraintTop_toBottomOf="@+id/sensorEventRegisterSwitch" />
 
     <Button
         android:id="@+id/btnToLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
+        android:paddingStart="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:background="@drawable/button_rounded_border"
         android:onClick="logOut"
         android:text="@string/logout_button_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
