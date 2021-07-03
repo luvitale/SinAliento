@@ -46,11 +46,6 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private double valor;
     private boolean isOn;
 
-    private TimerTask doAsynchronousTask;
-
-    private final int minutesToRefreshToken = 30;
-    private final int millisecondsToRefreshToken = minutesToRefreshToken * 60 * 1000;
-
     MySharedPreferences sharedPreferences = MySharedPreferences.getSharedPreferences(this);
 
     @Override
@@ -69,11 +64,12 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         txtGyroZ = findViewById(R.id.tvGyroZ);
         isOn = false;
         valor = 10;
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
+
+        initializeProximitySensor();
     }
 
     public void logOut(View view) {
-        StopSensors();
+        stopSensors();
         sharedPreferences.setToken("");
         sharedPreferences.setTokenRefresh("");
         Intent login = new Intent(this, MainActivity.class);
@@ -86,7 +82,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     public void initApp(View view) {
 
         if (valor == 0) {
-            InitializeSensors();
+            initializeGyroscope();
             isOn = true;
         }
         else {
@@ -120,7 +116,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                             mGyroTime = System.currentTimeMillis();
                         }
                         else {
-                            StopSensors();
+                            stopSensors();
                             Toast.makeText(this, getString(R.string.ambulance_alert_text), Toast.LENGTH_LONG ).show();
                         }
                     }
@@ -147,19 +143,34 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
     }
 
-    protected void InitializeSensors () {
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);
+    private void initializeSensor(Sensor sensor) {
+        mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    private void StopSensors()
+    private void initializeProximitySensor() {
+        initializeSensor(mSensorProximity);
+    }
+
+    private void initializeGyroscope() {
+        initializeSensor(mSensorGyroscope);
+    }
+
+    private void stopSensor(Sensor sensor) {
+        mSensorManager.unregisterListener(this, sensor);
+    }
+
+    private void stopSensors()
     {
-        mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE));
-        mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY));
+        stopSensor(mSensorProximity);
+        stopSensor(mSensorGyroscope);
     }
 
     public void refreshToken() {
+        int minutesToRefreshToken = 30;
+        int millisecondsToRefreshToken = minutesToRefreshToken * 60 * 1000;
+
         Timer timer = new Timer();
-        doAsynchronousTask = new TimerTask() {
+        TimerTask doAsynchronousTask = new TimerTask() {
             public void run() {
                 try {
                     Retrofit retrofit = new Retrofit.Builder()
@@ -172,20 +183,19 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                     Call<RefreshResponse> call = apiSOA.refreshToken("Bearer " + sharedPreferences.getTokenRefresh());
                     call.enqueue(new Callback<RefreshResponse>() {
                         @Override
-                        public void onResponse(Call<RefreshResponse> call, retrofit2.Response<RefreshResponse> response) {
+                        public void onResponse(Call<RefreshResponse> call, Response<RefreshResponse> response) {
 
-                            if(response.isSuccessful()) {
+                            if (response.isSuccessful()) {
                                 sharedPreferences.setToken(response.body().getToken());
                                 sharedPreferences.setTokenRefresh(response.body().getTokenRefresh());
-                            }
-                            else{
+                            } else {
                                 Toast.makeText(getApplicationContext(), getString(R.string.unsuccessful_refresh_token_text), Toast.LENGTH_LONG).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<RefreshResponse> call, Throwable t) {
-                            Log.e(null,t.getMessage());
+                            Log.e(null, t.getMessage());
                         }
                     });
                 } catch (Exception e) {
@@ -194,7 +204,6 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
             }
         };
         timer.schedule(doAsynchronousTask, 0, millisecondsToRefreshToken);
-
     }
 
     private void registerProximityEvent(double value) {
