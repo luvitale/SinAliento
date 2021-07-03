@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import ar.edu.unlam.sinaliento.dto.EventRequest;
+import ar.edu.unlam.sinaliento.dto.EventResponse;
 import ar.edu.unlam.sinaliento.dto.LoginRequest;
 import ar.edu.unlam.sinaliento.dto.LoginResponse;
 
@@ -114,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
                                      sharedPreferences.setToken(response.body().getToken());
                                      sharedPreferences.setTokenRefresh(response.body().getTokenRefresh());
 
+                                     registerLoginEvent(loginRequest.getEmail());
+
                                      progressDialog.dismiss();
 
                                      Toast.makeText(MainActivity.this, getString(string.started_session_text), Toast.LENGTH_SHORT).show();
@@ -192,6 +196,40 @@ public class MainActivity extends AppCompatActivity {
     public void register(View view){
         Intent register = new Intent(this, RegisterActivity.class);
         startActivity(register);
+    }
+
+    private void registerLoginEvent(String email) {
+        EventRequest eventRequest = new EventRequest();
+
+        eventRequest.setEnv(getString(R.string.environment));
+        eventRequest.setTypeEvents(getString(string.login_type_event));
+        eventRequest.setDescription(getString(string.login_description) + email);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(getString(R.string.apiURL))
+                .build();
+
+        SoaApi apiRegister = retrofit.create(SoaApi.class);
+        Call<EventResponse> call = apiRegister.registerEvent("Bearer " + sharedPreferences.getToken(), eventRequest);
+        call.enqueue(new Callback<EventResponse>() {
+            @Override
+            public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
+
+                if(response.isSuccessful()) {
+                    Log.e("Evento Login", "Evento Registrado");
+                }
+
+                else {
+                    Log.e("Evento Login", "Evento No Registrado");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EventResponse> call, Throwable t) {
+                Log.e(null,t.getMessage());
+            }
+        });
     }
 
 

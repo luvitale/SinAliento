@@ -43,11 +43,11 @@
     <string name="apiURL">http://so-unlam.net.ar/api/</string>
     <string name="environment">PROD</string>
     <string name="proximity_type_event">Medición de sensor de proximidad</string>
-    <string name="value_description">Valor:</string>
+    <string name="value_description">Valor: </string>
     <string name="gyroscope_type_event">Medición de giroscopio</string>
-    <string name="x_value_description">Valor X:</string>
-    <string name="y_value_description">, Valor Y:</string>
-    <string name="z_value_description">, Valor Z:</string>
+    <string name="x_value_description">Valor X: </string>
+    <string name="y_value_description">, Valor Y: </string>
+    <string name="z_value_description">, Valor Z: </string>
     <string name="unsuccessful_refresh_token_text">No se pudo actualizar el token</string>
     <string name="unobtained_x_value_text">No se puede obtener el valor en X</string>
     <string name="unobtained_y_value_text">No se puede obtener el valor en Y</string>
@@ -81,4 +81,6 @@
     <string name="empty_group_number_register_error">Debe ingresar un número de grupo</string>
     <string name="empty_commission_number_register_error">Debe ingresar un número de comisión</string>
     <string name="unvalid_commission_number_register_error">Debe ingresar un número de comisión válido (2900 o 3900)</string>
+    <string name="login_description">Sesión iniciada: </string>
+    <string name="login_type_event">Inicio de sesión</string>
 </resources>
