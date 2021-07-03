@@ -27,6 +27,13 @@ public class MySharedPreferences {
     private final static String TOKEN_KEY = "token";
     private final static String TOKEN_REFRESH_KEY = "token_refresh";
 
+    private final static String EMAIL_KEY = "email";
+
+    private final static String ADDITIONAL_EMAIL_KEY = "additional_email";
+
+    private final static String ENABLE_EMAIL_KEY = "enable_email";
+    private final static String ENABLE_ADDITIONAL_EMAIL_KEY = "enable_additional_email";
+
     public String getPattern() {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return prefs.getString(SAVE_PATTERN_KEY, NOT_EXISTS);
@@ -66,4 +73,57 @@ public class MySharedPreferences {
         editor.putString(TOKEN_REFRESH_KEY, TOKEN_REFRESH);
         editor.apply();
     }
+
+    public String getEmail() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(EMAIL_KEY, NOT_EXISTS);
+    }
+
+    public void setEmail(final String email) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(EMAIL_KEY, email);
+        editor.apply();
+    }
+
+    public String getAdditionalEmail() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(ADDITIONAL_EMAIL_KEY, NOT_EXISTS);
+    }
+
+    public void setAdditionalEmail(final String email) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(ADDITIONAL_EMAIL_KEY, email);
+        editor.apply();
+    }
+
+    public boolean additionalEmailExists() {
+        return !getAdditionalEmail().equals(NOT_EXISTS);
+    }
+
+    public Boolean isEnableEmail() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean(ENABLE_EMAIL_KEY, false);
+    }
+
+    public void setEnableEmail(final Boolean enableEmail) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(ENABLE_EMAIL_KEY, enableEmail);
+        editor.apply();
+    }
+
+    public Boolean isEnableAdditionalEmail() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean(ENABLE_ADDITIONAL_EMAIL_KEY, false);
+    }
+
+    public void setEnableAdditionalEmail(final Boolean enableAdditionalEmail) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(ENABLE_ADDITIONAL_EMAIL_KEY, enableAdditionalEmail);
+        editor.apply();
+    }
+
 }

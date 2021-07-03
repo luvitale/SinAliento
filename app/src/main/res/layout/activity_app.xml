@@ -47,22 +47,57 @@
         app:layout_constraintTop_toBottomOf="@+id/tvGyroZ"  />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnToControlRespiration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:background="@drawable/button_rounded"
         android:onClick="initApp"
-        android:text="@string/start_text"
+        android:text="@string/control_respiration_button_text"
+        android:paddingStart="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sensorEventRegisterSwitch" />
 
     <Button
+        android:id="@+id/btnToConfigureAlert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_rounded"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:onClick="configureAlert"
+        android:text="Configurar alerta"
+        android:paddingStart="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnToControlRespiration" />
+
+    <Button
+        android:id="@+id/generateAlert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_rounded"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:onClick="generateAlert"
+        android:text="Generar alerta"
+        android:paddingStart="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnToConfigureAlert" />
+
+    <Button
         android:id="@+id/btnToLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="40dp"
         android:paddingStart="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -71,7 +106,7 @@
         android:text="@string/logout_button_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/generateAlert" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

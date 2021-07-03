@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -126,6 +127,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                         }
                         else {
                             stopSensors();
+                            generateAlert();
                             Toast.makeText(this, getString(R.string.ambulance_alert_text), Toast.LENGTH_LONG ).show();
                         }
                     }
@@ -217,6 +219,48 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         timer.schedule(doAsynchronousTask, 0, millisecondsToRefreshToken);
     }
 
+    public void configureAlert(View view) {
+        Intent intent = new Intent(this, ConfigureAlertActivity.class);
+        startActivity(intent);
+    }
+
+    private void sendEmail() {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        String[] emails;
+
+        emailIntent.setData(Uri.parse("mailto:"));
+
+        if (sharedPreferences.isEnableEmail() && sharedPreferences.isEnableAdditionalEmail()) {
+            emails = new String[]{sharedPreferences.getEmail(), sharedPreferences.getAdditionalEmail()};
+        }
+
+        else if (sharedPreferences.isEnableEmail()) {
+            emails = new String[]{sharedPreferences.getEmail()};
+        }
+
+        else if (sharedPreferences.isEnableAdditionalEmail()) {
+            emails = new String[]{sharedPreferences.getAdditionalEmail()};
+        }
+
+        else {
+            return;
+        }
+
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, emails);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "My email's subject");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "My email's body");
+
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Enviar email usando..."));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "No hay instalados clientes de correo.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void generateAlert(View view) {
+        sendEmail();
+    }
+
     private void registerProximityEvent(double value) {
         EventRequest eventRequest = new EventRequest();
 
@@ -288,5 +332,4 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
             }
         });
     }
-
 }

@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
                                      sharedPreferences.setToken(response.body().getToken());
                                      sharedPreferences.setTokenRefresh(response.body().getTokenRefresh());
+                                     sharedPreferences.setEmail(loginRequest.getEmail());
 
                                      registerLoginEvent(loginRequest.getEmail());
 

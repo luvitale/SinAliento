@@ -32,7 +32,7 @@
     <string name="y_respiration_hint">Respiración en Y</string>
     <string name="z_respiration_hint">Respiración en Z</string>
     <string name="logout_button_text">Cerrar sesión</string>
-    <string name="start_text">Iniciar</string>
+    <string name="control_respiration_button_text">Controlar respiración</string>
     <string name="commission_number_hint">Número de Comisión</string>
     <string name="group_number_hint">Número de Grupo</string>
     <string name="dni_hint">DNI</string>
