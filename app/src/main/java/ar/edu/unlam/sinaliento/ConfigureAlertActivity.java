@@ -46,7 +46,7 @@ public class ConfigureAlertActivity extends AppCompatActivity {
         }
 
         else {
-            mAdditionalEmailEditText.setHint("Email adicional");
+            mAdditionalEmailEditText.setHint(getString(R.string.additional_email_default_hint));
         }
 
         mAdditionalEmailSwitch.setChecked(sharedPreferences.isEnableAdditionalEmail());
@@ -70,18 +70,18 @@ public class ConfigureAlertActivity extends AppCompatActivity {
         if (emailIsValid(txtAdditionalEmail)) {
             sharedPreferences.setAdditionalEmail(txtAdditionalEmail);
 
-            Toast.makeText(this, "Email adicional almacenado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.stored_additional_email_text), Toast.LENGTH_SHORT).show();
         }
 
         else if (!txtAdditionalEmail.isEmpty()) {
-            Toast.makeText(this, "Email adicional no válido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.unvalid_additional_email_text), Toast.LENGTH_SHORT).show();
         }
 
         if (sharedPreferences.additionalEmailExists()) {
             sharedPreferences.setEnableAdditionalEmail(mAdditionalEmailSwitch.isChecked());
         }
 
-        Toast.makeText(this, "Configuración guardada", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.save_configuration_toast_text), Toast.LENGTH_SHORT).show();
 
         goToAppActivity();
     }
@@ -92,7 +92,7 @@ public class ConfigureAlertActivity extends AppCompatActivity {
 
     public void deleteAdditionalEmail(View view) {
         sharedPreferences.setAdditionalEmail(null);
-        Toast.makeText(this, "Email adicional borrado", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.delete_additional_email_toast_text), Toast.LENGTH_SHORT).show();
         goToAppActivity();
     }
 }

@@ -69,7 +69,7 @@
     <string name="unregister_text">No pudo realizarse el registro</string>
     <string name="correct_pattern_text">Patrón ingresado correctamente</string>
     <string name="wrong_pattern_text">Patrón incorrecto</string>
-    <string name="battery_level_text">Batería:</string>
+    <string name="battery_level_text">Batería:\u0020</string>
     <string name="empty_dni_register_error">Debe ingresar un DNI</string>
     <string name="empty_name_register_error">Debe ingresar un nombre</string>
     <string name="unvalid_name_register_error">Debe ingresar un nombre válido</string>
@@ -84,4 +84,22 @@
     <string name="login_description">Sesión iniciada:\u0020</string>
     <string name="login_type_event">Inicio de sesión</string>
     <string name="sensor_event_register_switch_text">Registro de eventos de sensor\u0020\u0020</string>
+    <string name="email_alert_subject">Alerta Sin Aliento</string>
+    <string name="email_alert_text">Dejó de respirar el usuario\u0020</string>
+    <string name="email_chooser_title">Enviar email usando…</string>
+    <string name="email_chooser_not_install_exception">No hay instalados clientes de correo.</string>
+    <string name="generate_alert_text">Generar alerta</string>
+    <string name="configure_alert_text">Configurar alerta</string>
+    <string name="delete_additional_email_text">Borrar</string>
+    <string name="additional_email_switch_text">Habilitar envío de correo adicional\u0020\u0020</string>
+    <string name="save_alert_configuration_text">Guardar</string>
+    <string name="cancel_alert_configuration_text">Cancelar</string>
+    <string name="email_switch_text">Habilitar envío de correo\u0020\u0020</string>
+    <string name="email_textview_text">Tu correo</string>
+    <string name="additional_email_default_hint">Email adicional</string>
+    <string name="stored_additional_email_text">Email adicional almacenado</string>
+    <string name="unvalid_additional_email_text">Email adicional no válido</string>
+    <string name="save_configuration_toast_text">Configuración guardada</string>
+    <string name="delete_additional_email_toast_text">Email adicional borrado</string>
+    <string name="close_session_alert">Toque de nuevo para cerrar sesión</string>
 </resources>

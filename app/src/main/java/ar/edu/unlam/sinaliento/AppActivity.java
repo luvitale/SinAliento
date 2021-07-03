@@ -127,7 +127,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                         }
                         else {
                             stopSensors();
-                            generateAlert();
+                            generateAlert(null);
                             Toast.makeText(this, getString(R.string.ambulance_alert_text), Toast.LENGTH_LONG ).show();
                         }
                     }
@@ -247,13 +247,13 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         }
 
         emailIntent.putExtra(Intent.EXTRA_EMAIL, emails);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "My email's subject");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, "My email's body");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, R.string.email_alert_subject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.email_alert_text) + sharedPreferences.getEmail());
 
         try {
-            startActivity(Intent.createChooser(emailIntent, "Enviar email usando..."));
+            startActivity(Intent.createChooser(emailIntent, getString(R.string.email_chooser_title)));
         } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(this, "No hay instalados clientes de correo.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.email_chooser_not_install_exception), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -331,5 +331,25 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                 Log.e(null,t.getMessage());
             }
         });
+    }
+
+    private static final int TIME_INTERVAL = 2000;
+    private long mBackPressed;
+
+    @Override
+    public void onBackPressed()
+    {
+        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis())
+        {
+            super.onBackPressed();
+            logOut(null);
+            return;
+        }
+
+        else {
+            Toast.makeText(getBaseContext(), getString(R.string.close_session_alert), Toast.LENGTH_SHORT).show();
+        }
+
+        mBackPressed = System.currentTimeMillis();
     }
 }
