@@ -117,7 +117,7 @@
         android:backgroundTint="@color/white"
         android:textColor="@color/colorPrimaryDark"
         android:onClick="help"
-        android:text="Ayuda"
+        android:text="@string/help_button_text"
         android:paddingStart="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"

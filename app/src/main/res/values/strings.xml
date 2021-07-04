@@ -118,4 +118,5 @@
     <string name="configure_alert_textview_text"><u>Configurar alerta:</u> permite habilitar las distintas opciones de alerta como activar una señal sonora, enviar un SMS o un correo electrónico.</string>
     <string name="generate_alert_textview_text"><u>Generar alerta:</u> simula las señales de alerta configuradas.</string>
     <string name="back_to_app_button_text">Volver</string>
+    <string name="help_button_text">Ayuda</string>
 </resources>
