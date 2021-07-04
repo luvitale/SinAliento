@@ -31,6 +31,7 @@ public class MySharedPreferences {
     private final static String ADDITIONAL_EMAIL_KEY = "additional_email";
     private final static String PHONE_KEY = "phone";
 
+    private final static String ENABLE_BEEP_KEY = "enable_beep";
     private final static String ENABLE_EMAIL_KEY = "enable_email";
     private final static String ENABLE_ADDITIONAL_EMAIL_KEY = "enable_additional_email";
     private final static String ENABLE_PHONE_KEY = "enable_phone";
@@ -179,6 +180,21 @@ public class MySharedPreferences {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(ENABLE_ADDITIONAL_EMAIL_KEY, enableAdditionalEmail);
+        editor.apply();
+    }
+
+    /*
+        Enable Beep
+     */
+    public Boolean isEnableBeep() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean(ENABLE_BEEP_KEY, false);
+    }
+
+    public void setEnableBeep(final Boolean enableBeep) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(ENABLE_BEEP_KEY, enableBeep);
         editor.apply();
     }
 

@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -53,6 +54,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private double valor;
     private boolean isOn;
 
+    private MediaPlayer mp;
     private final int SMS_EXECUTED_AND_SEND_EMAIL = 800;
     private final int EMAIL_EXECUTED = 801;
 
@@ -78,6 +80,8 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         isOn = false;
         valor = 10;
 
+        mp = MediaPlayer.create(this, R.raw.beep_alert);
+
         initializeProximitySensor();
     }
 
@@ -88,6 +92,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
     public void logOut(View view) {
         stopSensors();
+        mp.stop();
         sharedPreferences.setToken("");
         sharedPreferences.setTokenRefresh("");
         Intent login = new Intent(this, MainActivity.class);
@@ -235,6 +240,16 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         startActivity(intent);
     }
 
+    private void activateBeep(){
+        if (sharedPreferences.isEnableBeep()) {
+            mp.start();
+        }
+
+        else {
+            Toast.makeText(this, getString(R.string.not_enabled_beep_toast_text), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private Intent getIntentSMS() {
         if (!sharedPreferences.isEnablePhone()) return null;
 
@@ -315,6 +330,8 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     }
 
     public void generateAlert(View view) {
+        activateBeep();
+
         Intent intentSMS = getIntentSMS();
 
         if (intentSMS == null) {
@@ -323,7 +340,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
             }
 
             else {
-                Toast.makeText(this, getString(R.string.not_configurated_alert_toast_text), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.not_enabled_alert_toast_text), Toast.LENGTH_SHORT).show();
             }
         }
 

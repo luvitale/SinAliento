@@ -111,5 +111,7 @@
     <string name="finished_sms_execution_toast_text">Finalizada ejecución de SMS</string>
     <string name="finished_email_execution_toast_text">Finalizada ejecución de Email</string>
     <string name="phone_alert_text">Dejó de respirar el usuario\u0020</string>
-    <string name="not_configurated_alert_toast_text">No hay alerta configurada</string>
+    <string name="not_enabled_alert_toast_text">Ningún mensaje de alerta está habilitado</string>
+    <string name="enable_beep_switch">Habilitar señal sonora\u0020\u0020</string>
+    <string name="not_enabled_beep_toast_text">La señal sonora no está habilitada</string>
 </resources>

@@ -17,6 +17,7 @@ import ar.edu.unlam.sinaliento.utils.MySharedPreferences;
 
 public class ConfigureAlertActivity extends AppCompatActivity {
 
+    Switch mBeepSwitch;
     EditText mPhoneEditText;
     Switch mPhoneSwitch;
     TextView mEmailTextView;
@@ -31,6 +32,7 @@ public class ConfigureAlertActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configure_alert);
 
+        mBeepSwitch = findViewById(R.id.beepSwitch);
         mPhoneEditText = findViewById(R.id.phoneEditText);
         mPhoneSwitch = findViewById(R.id.phoneSwitch);
         mEmailTextView = findViewById(R.id.emailTextView);
@@ -42,6 +44,8 @@ public class ConfigureAlertActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        mBeepSwitch.setChecked(sharedPreferences.isEnableBeep());
 
         if (sharedPreferences.phoneExists()) {
             mPhoneEditText.setHint(sharedPreferences.getPhone());
@@ -80,6 +84,10 @@ public class ConfigureAlertActivity extends AppCompatActivity {
         Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
         return VALID_EMAIL_ADDRESS_REGEX.matcher(email).find();
+    }
+
+    private void saveBeepConfiguration() {
+        sharedPreferences.setEnableBeep(mBeepSwitch.isChecked());
     }
 
     private void savePhoneConfiguration() {
@@ -123,6 +131,7 @@ public class ConfigureAlertActivity extends AppCompatActivity {
     }
 
     public void saveAlertConfiguration(View view) {
+        saveBeepConfiguration();
         savePhoneConfiguration();
         saveEmailConfiguration();
         saveAdditionalEmailConfiguration();
