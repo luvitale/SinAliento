@@ -7,13 +7,16 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Timer;
@@ -50,6 +53,9 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private double valor;
     private boolean isOn;
 
+    private final int SMS_EXECUTED_AND_SEND_EMAIL = 800;
+    private final int EMAIL_EXECUTED = 801;
+
     MySharedPreferences sharedPreferences = MySharedPreferences.getSharedPreferences(this);
 
     @Override
@@ -73,6 +79,11 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         valor = 10;
 
         initializeProximitySensor();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     public void logOut(View view) {
@@ -224,11 +235,35 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         startActivity(intent);
     }
 
-    private void sendEmail() {
-        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+    private Intent getIntentSMS() {
+        if (!sharedPreferences.isEnablePhone()) return null;
+
+        String message = getString(R.string.phone_alert_text) + sharedPreferences.getEmail();
+        String phone = sharedPreferences.getPhone();
+
+        Uri uri = Uri.parse("smsto:" + phone);
+        Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+
+        intent.putExtra("address", phone);
+        intent.putExtra("sms_body", message);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            //Getting the default sms app.
+            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(this);
+
+            // Can be null in case that there is no default, then the user would be able to choose
+            // any app that support this intent.
+            if (defaultSmsPackageName != null) intent.setPackage(defaultSmsPackageName);
+        }
+
+        return intent;
+    }
+
+    private Intent getIntentEmail() {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
         String[] emails;
 
-        emailIntent.setData(Uri.parse("mailto:"));
+        intent.setData(Uri.parse("mailto:"));
 
         if (sharedPreferences.isEnableEmail() && sharedPreferences.isEnableAdditionalEmail()) {
             emails = new String[]{sharedPreferences.getEmail(), sharedPreferences.getAdditionalEmail()};
@@ -243,22 +278,58 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         }
 
         else {
-            return;
+            return null;
         }
 
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, emails);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, R.string.email_alert_subject);
-        emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.email_alert_text) + sharedPreferences.getEmail());
+        intent.putExtra(Intent.EXTRA_EMAIL, emails);
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_alert_subject));
+        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.email_alert_text) + sharedPreferences.getEmail());
+
+        return intent;
+    }
+
+    private void sendEmail() {
+        Intent intentEmail = getIntentEmail();
+
+        if (intentEmail == null) return;
 
         try {
-            startActivity(Intent.createChooser(emailIntent, getString(R.string.email_chooser_title)));
+            startActivityForResult(Intent.createChooser(intentEmail, getString(R.string.email_chooser_title)), EMAIL_EXECUTED);
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(this, getString(R.string.email_chooser_not_install_exception), Toast.LENGTH_SHORT).show();
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SMS_EXECUTED_AND_SEND_EMAIL) {
+            Toast.makeText(this, getString(R.string.finished_sms_execution_toast_text), Toast.LENGTH_SHORT).show();
+            sendEmail();
+        }
+
+        else if (requestCode == EMAIL_EXECUTED) {
+            Toast.makeText(this, getString(R.string.finished_email_execution_toast_text), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void generateAlert(View view) {
-        sendEmail();
+        Intent intentSMS = getIntentSMS();
+
+        if (intentSMS == null) {
+            if (sharedPreferences.isEnableEmail() || sharedPreferences.isEnableAdditionalEmail()) {
+                sendEmail();
+            }
+
+            else {
+                Toast.makeText(this, getString(R.string.not_configurated_alert_toast_text), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        else {
+            startActivityForResult(intentSMS, SMS_EXECUTED_AND_SEND_EMAIL);
+        }
     }
 
     private void registerProximityEvent(double value) {

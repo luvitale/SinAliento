@@ -102,4 +102,14 @@
     <string name="save_configuration_toast_text">Configuración guardada</string>
     <string name="delete_additional_email_toast_text">Email adicional borrado</string>
     <string name="close_session_alert">Toque de nuevo para cerrar sesión</string>
+    <string name="enable_phone_switch">Habilitar envío de SMS al celular\u0020\u0020</string>
+    <string name="delete_phone_text">Borrar</string>
+    <string name="phone_default_hint">Celular (+541123456789)</string>
+    <string name="stored_phone_text">Celular almacenado</string>
+    <string name="unvalid_phone_text">Celular no válido</string>
+    <string name="delete_phone_toast_text">Celular borrado</string>
+    <string name="finished_sms_execution_toast_text">Finalizada ejecución de SMS</string>
+    <string name="finished_email_execution_toast_text">Finalizada ejecución de Email</string>
+    <string name="phone_alert_text">Dejó de respirar el usuario\u0020</string>
+    <string name="not_configurated_alert_toast_text">No hay alerta configurada</string>
 </resources>
