@@ -349,6 +349,11 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         }
     }
 
+    public void help(View view) {
+        Intent helpIntent = new Intent(this, HelpActivity.class);
+        startActivity(helpIntent);
+    }
+
     private void registerProximityEvent(double value) {
         EventRequest eventRequest = new EventRequest();
 

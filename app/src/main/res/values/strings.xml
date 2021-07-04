@@ -114,4 +114,8 @@
     <string name="not_enabled_alert_toast_text">Ningún mensaje de alerta está habilitado</string>
     <string name="enable_beep_switch">Habilitar señal sonora\u0020\u0020</string>
     <string name="not_enabled_beep_toast_text">La señal sonora no está habilitada</string>
+    <string name="control_respiration_textview_text"><u>Controlar respiración:</u> permite usar el giroscopio para obtener información de la respiración. Es necesario acercarse el celular al cuerpo para que el sensor de proximidad lo detecte y el giroscopio pueda medir.</string>
+    <string name="configure_alert_textview_text"><u>Configurar alerta:</u> permite habilitar las distintas opciones de alerta como activar una señal sonora, enviar un SMS o un correo electrónico.</string>
+    <string name="generate_alert_textview_text"><u>Generar alerta:</u> simula las señales de alerta configuradas.</string>
+    <string name="back_to_app_button_text">Volver</string>
 </resources>

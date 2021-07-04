@@ -21,7 +21,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ConfigureAlertActivity"></activity>
+        <activity android:name=".HelpActivity"></activity>
+        <activity android:name=".ConfigureAlertActivity" />
         <activity android:name=".InitialActivity" />
         <activity android:name=".CreatePatternActivity" />
         <activity android:name=".UnlockActivity">
@@ -35,7 +36,6 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".AppActivity" />
         <activity android:name=".RegisterActivity" />
-
     </application>
 
 </manifest>
