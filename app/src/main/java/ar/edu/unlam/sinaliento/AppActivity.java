@@ -47,6 +47,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
     private Switch mSensorEventRegisterSwitch;
 
+    private TextView txtProximity;
     private TextView txtGyroX;
     private TextView txtGyroY;
     private TextView txtGyroZ;
@@ -71,6 +72,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
         refreshToken();
 
+        txtProximity = findViewById(R.id.tvProximity);
         txtGyroX = findViewById(R.id.tvGyroX);
         txtGyroY = findViewById(R.id.tvGyroY);
         txtGyroZ = findViewById(R.id.tvGyroZ);
@@ -122,7 +124,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
             if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                 valor = event.values[0];
-                Toast.makeText(this, getString(R.string.proximity_text) + valor, Toast.LENGTH_SHORT).show();
+                txtProximity.setText("Proximidad: " + valor);
 
                 if (mSensorEventRegisterSwitch.isChecked()) {
                     registerProximityEvent(valor);
