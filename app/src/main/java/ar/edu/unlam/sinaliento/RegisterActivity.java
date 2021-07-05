@@ -21,6 +21,8 @@ import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static ar.edu.unlam.sinaliento.R.string.register_completed_toast_text;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText dni;
@@ -81,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onResponse(Call<RegisterResponse> call, retrofit2.Response<RegisterResponse> response) {
 
                         if(response.isSuccessful()) {
-                            Toast.makeText(RegisterActivity.this, getString(R.string.register_completed_toast_text), Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegisterActivity.this, getString(register_completed_toast_text), Toast.LENGTH_LONG).show();
                             backToLogin(null);
                         }
 

@@ -154,9 +154,9 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                         registerGyroscopeEvent(event.values[0], event.values[1], event.values[2]);
                     }
 
-                    txtGyroX.setText(Float.toString(event.values[0]));
-                    txtGyroY.setText(Float.toString(event.values[1]));
-                    txtGyroZ.setText(Float.toString(event.values[2]));
+                    txtGyroX.setText(String.format("%.4f", event.values[0]));
+                    txtGyroY.setText(String.format("%.4f", event.values[1]));
+                    txtGyroZ.setText(String.format("%.4f", event.values[2]));
                 }
             }
             else if(isOn == true){
@@ -170,9 +170,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
     private void initializeSensor(Sensor sensor) {
         mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
