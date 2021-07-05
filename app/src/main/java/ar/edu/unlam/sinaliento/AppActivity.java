@@ -124,7 +124,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
             if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
                 valor = event.values[0];
-                txtProximity.setText("Proximidad: " + valor);
+                txtProximity.setText(getString(R.string.proximity_value_text) + valor);
 
                 if (mSensorEventRegisterSwitch.isChecked()) {
                     registerProximityEvent(valor);
