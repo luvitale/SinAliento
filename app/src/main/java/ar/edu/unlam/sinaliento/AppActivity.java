@@ -39,12 +39,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AppActivity extends AppCompatActivity implements SensorEventListener {
 
     private static final int ROTATION_WAIT_TIME_MS = 500;
-    private long mGyroTime = 0;
 
     private SensorManager mSensorManager;
     private Sensor mSensorGyroscope;
     private Sensor mSensorProximity;
 
+    private Switch mControlRespirationSwitch;
     private Switch mSensorEventRegisterSwitch;
 
     private TextView txtProximity;
@@ -52,12 +52,16 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private TextView txtGyroY;
     private TextView txtGyroZ;
 
-    private double valor;
-    private boolean isOn;
+    private double proximityValue;
+    private float xValue;
+    private float yValue;
+    private float zValue;
 
     private MediaPlayer mp;
     private final int SMS_EXECUTED_AND_SEND_EMAIL = 800;
     private final int EMAIL_EXECUTED = 801;
+    private final int TIME_NOT_DEFINED = -1;
+    long referencedRespirationTime;
 
     MySharedPreferences sharedPreferences = MySharedPreferences.getSharedPreferences(this);
 
@@ -77,14 +81,30 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         txtGyroY = findViewById(R.id.tvGyroY);
         txtGyroZ = findViewById(R.id.tvGyroZ);
 
+        mControlRespirationSwitch = findViewById(R.id.controlRespirationSwitch);
         mSensorEventRegisterSwitch = findViewById(R.id.sensorEventRegisterSwitch);
 
-        isOn = false;
-        valor = 10;
+        referencedRespirationTime = TIME_NOT_DEFINED;
 
         mp = MediaPlayer.create(this, R.raw.beep_alert);
 
         initializeProximitySensor();
+        mControlRespirationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                if (phoneIsCloser()) {
+                    initializeSensor(mSensorGyroscope);
+                }
+
+                else {
+                    Toast.makeText(this, getString(R.string.phone_should_be_closer_text), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            else {
+                referencedRespirationTime = TIME_NOT_DEFINED;
+                stopSensor(mSensorGyroscope);
+            }
+        });
     }
 
     @Override
@@ -104,16 +124,8 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         startActivity(login);
     }
 
-    public void initApp(View view) {
-
-        if (valor == 0) {
-            initializeGyroscope();
-            isOn = true;
-        }
-        else {
-            Toast.makeText(this, getString(R.string.phone_should_be_closer_text), Toast.LENGTH_SHORT).show();
-        }
-
+    private boolean phoneIsCloser() {
+        return proximityValue == 0;
     }
 
     @Override
@@ -123,49 +135,58 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
             Log.d("Sensor", event.sensor.getName());
 
             if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-                valor = event.values[0];
-                txtProximity.setText(getString(R.string.proximity_value_text) + valor);
+                proximityValue = event.values[0];
+                txtProximity.setText(getString(R.string.proximity_value_text) + proximityValue);
 
                 if (mSensorEventRegisterSwitch.isChecked()) {
-                    registerProximityEvent(valor);
+                    registerProximityEvent(proximityValue);
                 }
             }
 
-            if(valor == 0 && isOn == true) {
-                if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
 
-                    long now = System.currentTimeMillis();
+            if (mControlRespirationSwitch.isChecked() && event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+                if (phoneIsCloser()) {
+                    xValue = event.values[0];
+                    yValue = event.values[1];
+                    zValue = event.values[2];
 
-                    long totalGyro = (long)(event.values[0] + event.values[1] + event.values[2]);
-
-                    if(totalGyro == 0) {
-                        mGyroTime = System.currentTimeMillis();
-                        if ((now - mGyroTime) < ROTATION_WAIT_TIME_MS) {
-                            mGyroTime = System.currentTimeMillis();
-                        }
-                        else {
-                            stopSensors();
-                            generateAlert(null);
-                            Toast.makeText(this, getString(R.string.ambulance_alert_text), Toast.LENGTH_LONG ).show();
-                        }
-                    }
+                    txtGyroX.setText(String.format("%.2f", xValue));
+                    txtGyroY.setText(String.format("%.2f", yValue));
+                    txtGyroZ.setText(String.format("%.2f", zValue));
 
                     if (mSensorEventRegisterSwitch.isChecked()) {
-                        registerGyroscopeEvent(event.values[0], event.values[1], event.values[2]);
+                        registerGyroscopeEvent(xValue, yValue, zValue);
                     }
 
-                    txtGyroX.setText(String.format("%.4f", event.values[0]));
-                    txtGyroY.setText(String.format("%.4f", event.values[1]));
-                    txtGyroZ.setText(String.format("%.4f", event.values[2]));
+                    long totalGyro = (long) (xValue + yValue + zValue);
+
+                    if (totalGyro <= 0.03) {
+                        if (referencedRespirationTime == TIME_NOT_DEFINED) {
+                            referencedRespirationTime = System.currentTimeMillis();
+                        }
+
+                        else if (elapsedTime(referencedRespirationTime) >= ROTATION_WAIT_TIME_MS) {
+                            stopSensors();
+                            generateAlert(null);
+                            Toast.makeText(this, getString(R.string.ambulance_alert_text), Toast.LENGTH_LONG).show();
+                        }
+                    }
+
                 }
             }
-            else if(isOn == true){
+
+            else {
+                referencedRespirationTime = TIME_NOT_DEFINED;
+
                 txtGyroX.setText(getString(R.string.unobtained_x_value_text));
                 txtGyroY.setText(getString(R.string.unobtained_y_value_text));
                 txtGyroZ.setText(getString(R.string.unobtained_z_value_text));
             }
-
         }
+    }
+
+    private long elapsedTime(long referenceTime) {
+        return System.currentTimeMillis() - referenceTime;
     }
 
 
