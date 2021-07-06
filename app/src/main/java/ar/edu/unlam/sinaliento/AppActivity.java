@@ -154,9 +154,9 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                         registerGyroscopeEvent(event.values[0], event.values[1], event.values[2]);
                     }
 
-                    txtGyroX.setText(String.format("%.4f", event.values[0]));
-                    txtGyroY.setText(String.format("%.4f", event.values[1]));
-                    txtGyroZ.setText(String.format("%.4f", event.values[2]));
+                    txtGyroX.setText(String.format("%.2f", event.values[0]));
+                    txtGyroY.setText(String.format("%.2f", event.values[1]));
+                    txtGyroZ.setText(String.format("%.2f", event.values[2]));
                 }
             }
             else if(isOn == true){
