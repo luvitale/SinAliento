@@ -2,6 +2,7 @@ package ar.edu.unlam.sinaliento;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -41,6 +43,8 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private static final int ROTATION_WAIT_TIME_MS = 500;
     private long mGyroTime = 0;
 
+    SimpleDateFormat formatter;
+
     private SensorManager mSensorManager;
     private Sensor mSensorGyroscope;
     private Sensor mSensorProximity;
@@ -52,23 +56,36 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private TextView txtGyroY;
     private TextView txtGyroZ;
 
-    private double valor;
+    private double proximityValue;
     private boolean isOn;
+
+    private float xValue;
+    private float yValue;
+    private float zValue;
 
     private MediaPlayer mp;
     private final int SMS_EXECUTED_AND_SEND_EMAIL = 800;
     private final int EMAIL_EXECUTED = 801;
 
     MySharedPreferences sharedPreferences = MySharedPreferences.getSharedPreferences(this);
+    SharedPreferences eventSharedPreferences;
+    SharedPreferences.Editor eventEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app);
 
+        eventSharedPreferences = getApplicationContext().getSharedPreferences(
+                getString(R.string.event_shared_preferences_name),
+                Context.MODE_PRIVATE
+        );
+
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mSensorProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+
+        formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
         refreshToken();
 
@@ -80,7 +97,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         mSensorEventRegisterSwitch = findViewById(R.id.sensorEventRegisterSwitch);
 
         isOn = false;
-        valor = 10;
+        proximityValue = 10;
 
         mp = MediaPlayer.create(this, R.raw.beep_alert);
 
@@ -95,8 +112,9 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     public void logOut(View view) {
         stopSensors();
         mp.stop();
-        sharedPreferences.setToken("");
-        sharedPreferences.setTokenRefresh("");
+        sharedPreferences.setToken(null);
+        sharedPreferences.setTokenRefresh(null);
+        sharedPreferences.setEmail(null);
         Intent login = new Intent(this, MainActivity.class);
 
         Toast.makeText(this, getString(R.string.finished_session_text), Toast.LENGTH_SHORT).show();
@@ -106,7 +124,7 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
 
     public void initApp(View view) {
 
-        if (valor == 0) {
+        if (proximityValue == 0) {
             initializeGyroscope();
             isOn = true;
         }
@@ -123,20 +141,30 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
             Log.d("Sensor", event.sensor.getName());
 
             if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-                valor = event.values[0];
-                txtProximity.setText(getString(R.string.proximity_value_text) + valor);
+                proximityValue = event.values[0];
+                txtProximity.setText(getString(R.string.proximity_value_text) + proximityValue);
+
+                eventEditor = eventSharedPreferences.edit();
+                eventEditor.putString(
+                        formatter.format(System.currentTimeMillis()),
+                        getString(R.string.proximity_value_text) + proximityValue
+                );
+                eventEditor.apply();
 
                 if (mSensorEventRegisterSwitch.isChecked()) {
-                    registerProximityEvent(valor);
+                    registerProximityEvent(proximityValue);
                 }
             }
 
-            if(valor == 0 && isOn == true) {
+            if(proximityValue == 0 && isOn == true) {
                 if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+                    xValue = event.values[0];
+                    yValue = event.values[1];
+                    zValue = event.values[2];
 
                     long now = System.currentTimeMillis();
 
-                    long totalGyro = (long)(event.values[0] + event.values[1] + event.values[2]);
+                    long totalGyro = (long)(xValue + yValue + zValue);
 
                     if(totalGyro == 0) {
                         mGyroTime = System.currentTimeMillis();
@@ -151,12 +179,22 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
                     }
 
                     if (mSensorEventRegisterSwitch.isChecked()) {
-                        registerGyroscopeEvent(event.values[0], event.values[1], event.values[2]);
+                        registerGyroscopeEvent(xValue, yValue, zValue);
                     }
 
-                    txtGyroX.setText(String.format("%.2f", event.values[0]));
-                    txtGyroY.setText(String.format("%.2f", event.values[1]));
-                    txtGyroZ.setText(String.format("%.2f", event.values[2]));
+                    txtGyroX.setText(String.format("%.2f", xValue));
+                    txtGyroY.setText(String.format("%.2f", yValue));
+                    txtGyroZ.setText(String.format("%.2f", zValue));
+
+                    eventEditor = eventSharedPreferences.edit();
+                    eventEditor.putString(
+                            formatter.format(System.currentTimeMillis()),
+                            getString(R.string.gyroscope_values_text) +
+                            getString(R.string.gyroscope_x_value_text) + xValue +
+                            getString(R.string.gyroscope_y_value_text) + yValue +
+                            getString(R.string.gyroscope_z_value_text) + zValue
+                    );
+                    eventEditor.apply();
                 }
             }
             else if(isOn == true){
@@ -233,6 +271,11 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
             }
         };
         timer.schedule(doAsynchronousTask, 0, millisecondsToRefreshToken);
+    }
+
+    public void goToEventList(View view) {
+        Intent intent = new Intent(this, EventListActivity.class);
+        startActivity(intent);
     }
 
     public void configureAlert(View view) {
