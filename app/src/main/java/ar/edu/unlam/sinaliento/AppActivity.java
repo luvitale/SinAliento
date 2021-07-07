@@ -1,8 +1,10 @@
 package ar.edu.unlam.sinaliento;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
@@ -20,6 +23,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.Timer;
@@ -64,8 +69,9 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     private float zValue;
 
     private MediaPlayer mp;
-    private final int SMS_EXECUTED_AND_SEND_EMAIL = 800;
+
     private final int EMAIL_EXECUTED = 801;
+    private final int PERMISSION_REQUEST_SEND_SMS = 1;
 
     MySharedPreferences sharedPreferences = MySharedPreferences.getSharedPreferences(this);
     SharedPreferences eventSharedPreferences;
@@ -115,11 +121,10 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         sharedPreferences.setToken(null);
         sharedPreferences.setTokenRefresh(null);
         sharedPreferences.setEmail(null);
-        Intent login = new Intent(this, MainActivity.class);
 
         Toast.makeText(this, getString(R.string.finished_session_text), Toast.LENGTH_SHORT).show();
 
-        startActivity(login);
+        finish();
     }
 
     public void initApp(View view) {
@@ -293,30 +298,6 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
         }
     }
 
-    private Intent getIntentSMS() {
-        if (!sharedPreferences.isEnablePhone()) return null;
-
-        String message = getString(R.string.phone_alert_text) + sharedPreferences.getEmail();
-        String phone = sharedPreferences.getPhone();
-
-        Uri uri = Uri.parse("smsto:" + phone);
-        Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-
-        intent.putExtra("address", phone);
-        intent.putExtra("sms_body", message);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            //Getting the default sms app.
-            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(this);
-
-            // Can be null in case that there is no default, then the user would be able to choose
-            // any app that support this intent.
-            if (defaultSmsPackageName != null) intent.setPackage(defaultSmsPackageName);
-        }
-
-        return intent;
-    }
-
     private Intent getIntentEmail() {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         String[] emails;
@@ -362,34 +343,55 @@ public class AppActivity extends AppCompatActivity implements SensorEventListene
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == SMS_EXECUTED_AND_SEND_EMAIL) {
-            Toast.makeText(this, getString(R.string.finished_sms_execution_toast_text), Toast.LENGTH_SHORT).show();
-            sendEmail();
-        }
-
-        else if (requestCode == EMAIL_EXECUTED) {
+        if (requestCode == EMAIL_EXECUTED) {
             Toast.makeText(this, getString(R.string.finished_email_execution_toast_text), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean checkSMSPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, PERMISSION_REQUEST_SEND_SMS);
+        }
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void sendSMS() {
+        if (!checkSMSPermission()) return;
+
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            String message = getString(R.string.phone_alert_text) + sharedPreferences.getEmail();
+            String phone = sharedPreferences.getPhone();
+            smsManager.sendTextMessage(
+                    phone,
+                    null,
+                    message,
+                    null,
+                    null
+            );
+            Toast.makeText(
+                    getApplicationContext(),
+                    getString(R.string.finished_sms_execution_toast_text),
+                    Toast.LENGTH_SHORT
+            ).show();
+        } catch (Exception ex) {
+            Toast.makeText(
+                    getApplicationContext(),
+                    getString(R.string.failed_sms_execution_toast_text),
+                    Toast.LENGTH_LONG
+            ).show();
+            ex.printStackTrace();
         }
     }
 
     public void generateAlert(View view) {
         activateBeep();
 
-        Intent intentSMS = getIntentSMS();
-
-        if (intentSMS == null) {
-            if (sharedPreferences.isEnableEmail() || sharedPreferences.isEnableAdditionalEmail()) {
-                sendEmail();
-            }
-
-            else {
-                Toast.makeText(this, getString(R.string.not_enabled_alert_toast_text), Toast.LENGTH_SHORT).show();
-            }
+        if (sharedPreferences.isEnablePhone()) {
+            sendSMS();
         }
 
-        else {
-            startActivityForResult(intentSMS, SMS_EXECUTED_AND_SEND_EMAIL);
-        }
+        sendEmail();
     }
 
     public void help(View view) {
