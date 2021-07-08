@@ -129,4 +129,5 @@
     <string name="gyroscope_y_value_text">, y=</string>
     <string name="gyroscope_z_value_text">, z=</string>
     <string name="failed_sms_execution_toast_text">Falló el envío del SMS</string>
+    <string name="event_list_button_text">Listado de eventos</string>
 </resources>
